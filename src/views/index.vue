@@ -1,14 +1,6 @@
 <template>
 	<div id='index' @click.native="createCircle" @click="createCircle">
-
-		<!-- <audio class="index-audio" ref="audio" src="../assets/music/bg-r.flac"></audio> -->
-
-
-		<!-- <div class="player">
-			<button @click="stopMusic()">
-				<i class="red-icon" :class="{'red-icon-bofangqibofang':playing,'red-icon-bofangqizanting40':!playing}"></i>
-			</button>
-		</div> -->
+		<h1 class="information">{{information}}</h1>
 		<button class="file-button" @click="handle">
 			<i class="red-icon red-icon-daohangtubiao"></i>
 		</button>
@@ -21,24 +13,22 @@
 		name: 'index',
 		data() {
 			return {
-				circle: '',
+				circle: 0,
 				timer: '',
-				bitNumber: 1024,
 				resource: {},
 				audioCtx: {},
-				playing: true,
+				playing: false,
 				canvas: {},
 				interval: 0,
+				information:'想要个酷炫的音乐播放器'
 			}
 		},
 		mounted() {
-			window.requestAnimationFrame = window.requestAnimationFrame | webkitRequestAnimationFrame
 			this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-			this.startWave();
+			// this.startWave();
 		},
 		methods: {
 			handle() {
-				// that.playing
 				this.$refs['file'].click();
 			},
 			caculate(analyser) {
@@ -47,48 +37,54 @@
 				let lineNumber = Math.round(this.canvas.width / (gap + lineWidth));
 				let step = Math.round(analyser.frequencyBinCount / lineNumber);
 				let gradient = context.createLinearGradient(0, 0, 0, cheight);
-				gradient.addColorStop(1, '#dbf6f4');
-				gradient.addColorStop(0.5, '#25f3e8');
-				gradient.addColorStop(0, '#0e625a');
+				gradient.addColorStop(0.5, '#f50a08');
+				gradient.addColorStop(0.4, '#f57708');
+				gradient.addColorStop(0.6, '#f57708');
+				gradient.addColorStop(0.3, '#f5da08');
+				gradient.addColorStop(0.7, '#f5da08');
+				gradient.addColorStop(0.2, '#f5089f');
+				gradient.addColorStop(0.8, '#f5089f');
+				gradient.addColorStop(0, '#7b08f5');
+				gradient.addColorStop(1, '#7b08f5');
 				context.fillStyle = gradient;
-				this.bitNumber = analyser.frequencyBinCount;
 				let array = new Uint8Array(analyser.frequencyBinCount);
 				this.interval = setInterval(() => {
 					analyser.getByteTimeDomainData(array);
 					context.clearRect(0, 0, cwidth, cheight);
 					for (let i = 0; i < lineNumber; i++) {
 						const element = array[i * step];
-						console.log(element, array);
-						context.fillRect(i * (gap + lineWidth), element - this.canvas.height, lineWidth, this.canvas.height);
+						context.fillRect(i * (gap + lineWidth),0.5*cheight, lineWidth, -element);
+						// context.fillRect(i * (gap + lineWidth),0.5*cheight, lineWidth, element);
 					}
 				}, 1000 / 60);
 			},
-
 			decodeData() {
-				if (this.$refs['file'].files[0]) {
-					return;
+				if (this.$refs['file'].files.length==0) {
+					this.information='please select an audio file'
+					return
 				}
-				if (that.resource.stop) {
-					clearInterval(this.interval);
-					that.resource.stop(this.audioCtx.currentTime)
+				if(this.resource.stop){
+					this.resource.stop(this.audioCtx.currentTime);
 				}
-				let that = this
-				let analyser = this.audioCtx.createAnalyser()
-				let fileReader = new FileReader()
+				clearInterval(this.interval);
+				let that = this,analyser = this.audioCtx.createAnalyser(),fileReader = new FileReader()
 				fileReader.onloadend = function (e) {
 					let filedata = e.target.result
 					that.audioCtx.decodeAudioData(filedata, function (buffer) {
 						that.resource = that.audioCtx.createBufferSource();
-						that.resource.buffer = buffer;
-						that.resource.connect(analyser);
-						analyser.connect(that.audioCtx.destination);
-						that.resource.start();
-						that.playing = true;
-						that.createCanvas();
+						that.resource.buffer = buffer
+						that.resource.loop = true
+						that.resource.connect(analyser)
+						analyser.connect(that.audioCtx.destination)
+						that.resource.start(0)
+						that.information=that.$refs['file'].files[0].name
+						that.playing = true
+						that.createCanvas()
 						that.caculate(analyser)
 					})
 				}
 				fileReader.readAsArrayBuffer(this.$refs['file'].files[0])
+				this.information='正在解码你的音乐'
 			},
 			createCanvas() {
 				if (this.canvas.width) {
@@ -98,8 +94,8 @@
 				let height = window.screen.availHeight;
 				this.canvas = document.createElement('canvas')
 				this.canvas.className = 'waveCanvas';
-				this.canvas.width = width;
-				this.canvas.height = height * 0.8;
+				this.canvas.width = 0.5*width;
+				this.canvas.height = 0.5*height;
 				document.getElementById('index').appendChild(this.canvas);
 			},
 			startWave() {
@@ -138,18 +134,30 @@
 
 <style lang="scss">
 	#index {
-		background-image: url('../assets/images/bg.jpg');
+		/* background-image: url('../assets/images/bg.jpg'); */
+		background-color: rgb(59, 53, 53);
 		background-attachment: fixed;
 		background-position: center;
 		background-size: 100% 100%;
 		background-repeat: round;
 		overflow: none;
+		.information{
+			position: absolute;
+			top:0;
+			text-align:center;
+			color:#fff;
+			text-indent:20px;
+		}
 		button {
 			z-index: 9999;
 		}
 		.waveCanvas {
 			z-index: 1;
 			color: aliceblue;
+			margin-left:50%;
+			margin-top:30px;
+			transform: translateX(-50%)
+
 		}
 		.file-button {
 			width: 48px;
