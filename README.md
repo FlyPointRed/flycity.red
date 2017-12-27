@@ -2,6 +2,8 @@
 
 Just make me happy.
 
+[city address:](https://www.flycity.red).
+
 This project clone built with Vue 2.0 + vue-router + vuex, with server-side rendering.
 
 - Server Side Rendering
