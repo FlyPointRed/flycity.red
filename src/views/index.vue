@@ -94,7 +94,7 @@
 				let height = window.screen.availHeight;
 				this.canvas = document.createElement('canvas')
 				this.canvas.className = 'waveCanvas';
-				this.canvas.width = 0.5*width;
+				this.canvas.width = 0.8*width;
 				this.canvas.height = 0.5*height;
 				document.getElementById('index').appendChild(this.canvas);
 			},
@@ -151,15 +151,29 @@
 		button {
 			z-index: 9999;
 		}
-		.waveCanvas {
-			z-index: 1;
-			color: aliceblue;
-			margin-left:50%;
-			margin-top:30px;
-			transform: translateX(-50%)
-
+		@media screen and (max-width:800px) {
+			.waveCanvas {
+				position: fixed;
+				z-index: 1;
+				color: aliceblue;
+				margin-left:50%;
+				margin-top:50%;
+				transform: translateX(-50%)
+			}
 		}
+		@media screen and (min-width:800px) {
+			.waveCanvas {
+				position: fixed;
+				z-index: 1;
+				color: aliceblue;
+				margin-left:50%;
+				margin-top:10%;
+				transform: translateX(-50%)
+			}
+		}
+		
 		.file-button {
+			position: fixed;
 			width: 48px;
 			color: aliceblue;
 			background: rgb(85, 184, 167);
@@ -167,8 +181,7 @@
 			height: 48px;
 			border-radius: 100%;
 			cursor: pointer;
-			position: fixed;
-			bottom: 10%;
+			bottom: 20%;
 			left: 50%;
 			outline: none;
 			z-index: 10000;

@@ -88,7 +88,7 @@ const { router } = require('./src/backend/process');
 app.use('/fly', router);
 
 app.use('*', function (req, res, next) {
-	console.log(req.ip,'===>',req.ips,'===>',req.originalUrl)
+	console.log(new Date().toLocaleTimeString(),'===>',req.ip,'===>',req.originalUrl)
 	next();
 });
 
