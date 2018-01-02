@@ -1,6 +1,6 @@
 # flycity.red
 
-Just make me happy.
+Good luck and have fun.
 
 ##[City Address](https://www.flycity.red).
 
